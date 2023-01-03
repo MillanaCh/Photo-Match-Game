@@ -1,3 +1,6 @@
+*{
+  box-sizing: border-box;
+}
 .App {
   text-align: center;
   display: flex;
@@ -7,6 +10,19 @@
 .card{
   width: 180px;
   height: 180px;
+  background-color: blue;
+  border: 1px solid black;
+  box-sizing: border-box;
+}
+.card:hover{
+  border: solid 2px white;
+  cursor:pointer
+}
+.nowShow{
+  display: none;
+}
+.show{
+  display: block;
 }
 img{
   width: 100%;

@@ -8,6 +8,8 @@ const KEY = "K-4FGgVqQa8c_jcbQEfbznmmROHLvVtLv75JXNpRTZI";
 
 function App() {
   const [photos, setPhotos] = useState([]);
+  const [selected, setSelected] = useState(null)
+
   const fetchingFromServer = async () => {
     try {
       // const req = await fetch(URL+KEY+"&page=2")
@@ -40,7 +42,7 @@ function App() {
       setPhotos(data)
 
       data = data.map((image) => {
-        return { image, unique: nanoid };
+        return { image, unique: nanoid() };
       });
       setPhotos(data);
     } catch (err) {
@@ -48,17 +50,47 @@ function App() {
     }
   };
 
+  const handlerClick = (unique) => {
+    const foundIndex = photos.findIndex((photo) => photo.unique === unique)
+    let copyOfPhoto = {...photos}
+    copyOfPhoto[foundIndex].showThisPhoto = true //add new key to obj
+    setPhotos(copyOfPhoto)
+    // console.log(photos[foundIndex])
+    // console.log(photos[index])
+    if(selected === null){
+      setSelected(unique)
+      return
+    } else {
+      if(copyOfPhoto[unique].unique === copyOfPhoto[selected].unique){
+        return
+      }else {
+        //if photo different make showPhoto to false
+        if(copyOfPhoto[unique].id !== copyOfPhoto[selected].id){
+          setTimeout(() => {
+            copyOfPhoto[unique].showThisPhoto = false
+            copyOfPhoto[selected].showThisPhoto = false
+            setPhotos(copyOfPhoto)
+            setSelected(null)
+          }, 1000)
+        }else{
+           
+        }
+      }
+      // copyOfPhoto[unique] //photo that was just cliked
+      // copyOfPhoto[selected]//photo that was clicked before
+    }
+  }
   useEffect(() => {
     fetchingFromServer();
   }, []);
 
   return (
     <div className="App">
-      {photos.map((photo) => {
+      {photos.map((photo, index) => {
         return (
           //use jsx
-          <div className="card" key={photo.unique}>
-            <img src={photo.image.urls.thumb} alt={photo.image.alt_description} />
+          <div className="card" key={photo.unique} onClick={() => handlerClick(photos.unique)}>
+            <img src={photo.image.urls.thumb} alt={photo.image.alt_description} className= {photo.showThisPhoto ? "show " : "notShow"}/>
           </div>
         );
       })}

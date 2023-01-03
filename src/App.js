@@ -73,7 +73,7 @@ function App() {
             setSelected(null)
           }, 1000)
         }else{
-           
+           setSelected(null)
         }
       }
       // copyOfPhoto[unique] //photo that was just cliked

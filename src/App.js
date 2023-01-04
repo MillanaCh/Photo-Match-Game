@@ -9,6 +9,7 @@ const KEY = "K-4FGgVqQa8c_jcbQEfbznmmROHLvVtLv75JXNpRTZI";
 function App() {
   const [photos, setPhotos] = useState([]);
   const [selected, setSelected] = useState(null)
+  const [reset, setReset] = useState(false)
 
   const fetchingFromServer = async () => {
     try {
@@ -29,6 +30,11 @@ function App() {
         ...page2.data.slice(0, 2),
       ];
 
+      data = data.map((image) => {
+        return { ...image, unique: nanoid() };
+      });
+      setPhotos(data);
+
       const shuffle = (arr) => {
         for(let i = 0; i < arr.length; i++){
           let random = Math.floor(Math.random() * arr.length)
@@ -38,13 +44,7 @@ function App() {
         }
         return arr
       }
-      data = shuffle(data)
-      setPhotos(data)
-
-      data = data.map((image) => {
-        return { image, unique: nanoid() };
-      });
-      setPhotos(data);
+      setPhotos(shuffle(data))
     } catch (err) {
       console.log(err);
     }
@@ -61,39 +61,41 @@ function App() {
       setSelected(unique)
       return
     } else {
-      if(copyOfPhoto[unique].unique === copyOfPhoto[selected].unique){
-        return
-      }else {
+        if(copyOfPhoto[unique].unique === copyOfPhoto[selected].unique){
+           return
+        } else {
         //if photo different make showPhoto to false
-        if(copyOfPhoto[unique].id !== copyOfPhoto[selected].id){
-          setTimeout(() => {
+           if(copyOfPhoto[unique].id !== copyOfPhoto[selected].id){
+            setTimeout(() => {
             copyOfPhoto[unique].showThisPhoto = false
             copyOfPhoto[selected].showThisPhoto = false
             setPhotos(copyOfPhoto)
             setSelected(null)
-          }, 1000)
-        }else{
+          }, 500)
+          } else {
            setSelected(null)
-        }
+          }
       }
       // copyOfPhoto[unique] //photo that was just cliked
       // copyOfPhoto[selected]//photo that was clicked before
     }
   }
+
   useEffect(() => {
     fetchingFromServer();
-  }, []);
+  }, [reset]);
 
   return (
     <div className="App">
       {photos.map((photo, index) => {
         return (
           //use jsx
-          <div className="card" key={photo.unique} onClick={() => handlerClick(photos.unique)}>
-            <img src={photo.image.urls.thumb} alt={photo.image.alt_description} className= {photo.showThisPhoto ? "show " : "notShow"}/>
+          <div className="card" key={photo.unique} onClick={() => handlerClick(photo.unique)}>
+            <img src={photo.urls.thumb} alt={photo.alt_description} className={photo.showThisPhoto ? "show" : "notShow"} />
           </div>
         );
       })}
+      <button onClick={() => setReset(!reset)} className="btn">Reset</button>
     </div>
   );
 }
